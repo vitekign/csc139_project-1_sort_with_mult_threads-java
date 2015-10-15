@@ -19,17 +19,12 @@ public class App {
     public int[] arr;
     public int[][] indices;
     int NUM_THREADS;
+    int NUM_ELEMENTS;
     SORT_TYPES SORTING_ALGORITHM;
 
-    public int getNumberOfElemetns() {
-        return NUM_ELEMENTS;
-    }
 
-    public void setNumberOfElements(int NUM_ELEMENTS) {
-        this.NUM_ELEMENTS = NUM_ELEMENTS;
-    }
 
-    private int NUM_ELEMENTS;
+
 
 
     public static void quickSort(int[] a, int p, int r)
@@ -163,16 +158,18 @@ public class App {
     }
 
 
-    private void runSort(SORT_TYPES SORT_TYPE){
+    private void runSort(){
         NUM_THREADS = 4;
+        NUM_ELEMENTS = 100000 ;
         indices = new int[20][2];
         long startTime;
         long endTime;
+        long duration;
 
-        SORTING_ALGORITHM = SORT_TYPE;
+        SORTING_ALGORITHM = SORTING_ALGORITHM.INSERTION;
 
         int low;
-        int pivot = this.getNumberOfElemetns() / NUM_THREADS;
+        int pivot = NUM_ELEMENTS / NUM_THREADS;
         for (int i = 0, j = 1; i < NUM_THREADS; i++, j++) {
             low = i * pivot;
 
@@ -187,12 +184,12 @@ public class App {
          *
          */
             if (i == NUM_THREADS - 1) {
-                if(  SORTING_ALGORITHM != SORTING_ALGORITHM.MERGE ){
+                if(  SORTING_ALGORITHM != SORTING_ALGORITHM.INSERTION ){
                     indices[i][0] = low;
-                    indices[i][1] = this.getNumberOfElemetns() - 1;}
+                    indices[i][1] = NUM_ELEMENTS - 1;}
                 else {
                     indices[i][0] = low;
-                    indices[i][1] = this.getNumberOfElemetns() %(NUM_THREADS) + pivot;
+                    indices[i][1] = NUM_ELEMENTS%(NUM_THREADS) + pivot;
                 }
 
             } else {
@@ -236,11 +233,11 @@ public class App {
 
 
 
-        pivot = this.getNumberOfElemetns() / NUM_THREADS;
+        pivot = NUM_ELEMENTS / NUM_THREADS;
         for(int i = 0 ,j= 1; i < NUM_THREADS-1; i++, j++){
             low = i * pivot;
             if((NUM_THREADS-2) == i){
-                merge(arr, 0, (j*pivot)-1, this.getNumberOfElemetns() - 1);
+                merge(arr, 0, (j*pivot)-1, NUM_ELEMENTS - 1);
             }else {
                 merge(arr, 0, (j*pivot)-1, (j+1)*pivot-1);
             }
@@ -264,9 +261,8 @@ public class App {
     public static void main(String[] args) {
 
         App app = new App();
-        app.setNumberOfElements(10000);
-        app.generateArrayWithRandomNumbers(app.getNumberOfElemetns(), 0,0);
-        app.runSort(SORT_TYPES.INSERTION);
+        app.generateArrayWithRandomNumbers(100000, 0,0);
+        app.runSort();
 
         System.out.println("The array was generated");
 
