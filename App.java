@@ -1,7 +1,5 @@
 package sort_with_threads;
-import java.util.ArrayList;
 import java.util.Random;
-import java.util.Vector;
 
 /**
  * Created by Victor Ignatenkov on 10/13/15.
@@ -20,9 +18,34 @@ public class App {
 
     public int[] arr;
     public int[][] indices;
+
     int NUM_THREADS;
+
     int NUM_ELEMENTS;
+
     SORT_TYPES SORTING_ALGORITHM;
+
+
+
+
+    public int getNumberOfThreads() {
+        return NUM_THREADS;
+    }
+
+    public void setNumberOfThreads(int NUM_THREADS) {
+        this.NUM_THREADS = NUM_THREADS;
+    }
+
+
+
+
+    public int getNumberOfElements() {
+        return NUM_ELEMENTS;
+    }
+
+    public void setNumberOfElements(int NUM_ELEMENTS) {
+        this.NUM_ELEMENTS = NUM_ELEMENTS;
+    }
 
 
 
@@ -171,18 +194,22 @@ public class App {
     }
 
 
-    private void runSort(){
-        NUM_THREADS = 4;
-        NUM_ELEMENTS = 1000000;
+    private void runSort(int numElements, SORT_TYPES type, int numThreads ){
+        setNumberOfElements(numElements);
+        SORTING_ALGORITHM = type;
+        NUM_THREADS = numThreads;
+
         indices = new int[20][2];
         long startTime;
         long endTime;
         long duration;
 
+
+
         /**
          * CHANGE TYPE OF SORT HERE !!!
          */
-        SORTING_ALGORITHM = SORTING_ALGORITHM.MERGE;
+
 
         int low;
         int pivot = NUM_ELEMENTS / NUM_THREADS;
@@ -227,7 +254,7 @@ public class App {
         }
 
 
-
+        generateArrayWithRandomNumbers(NUM_ELEMENTS, 0, 0);
         startTime = System.currentTimeMillis();
 
         for (int i = 0; i < NUM_THREADS; i++) {
@@ -278,7 +305,7 @@ public class App {
 //        }
 
 
-        generateArrayWithRandomNumbers(1000000, 0,0);
+        generateArrayWithRandomNumbers(NUM_ELEMENTS, 0,0);
 
 
         Runnable [] tasks = new Runnable[12];
@@ -290,17 +317,17 @@ public class App {
         startTime = System.currentTimeMillis();
 
         for(int i = 0; i < NUM_THREADS; i++){
-            final int iInsideCosure = i;
+            final int iInsideClosure = i;
             tasks[i] = () ->{
 
                 if (SORTING_ALGORITHM == SORTING_ALGORITHM.MERGE) {
-                    mergeSort(arr, indices[iInsideCosure][0], indices[iInsideCosure][1]);
+                    mergeSort(arr, indices[iInsideClosure][0], indices[iInsideClosure][1]);
                 }
                 else if (SORTING_ALGORITHM == SORTING_ALGORITHM.QUICK){
-                    quickSort(arr, indices[iInsideCosure][0], indices[iInsideCosure][1]);
+                    quickSort(arr, indices[iInsideClosure][0], indices[iInsideClosure][1]);
                 }
                 else if (SORTING_ALGORITHM == SORTING_ALGORITHM.INSERTION) {
-                    insertionSort( arr,indices[iInsideCosure][0],  indices[iInsideCosure][1]);
+                    insertionSort( arr,indices[iInsideClosure][0],  indices[iInsideClosure][1]);
                 }
             };
 
@@ -313,7 +340,7 @@ public class App {
         }
 
         for(int i = 0; i < NUM_THREADS; i++){
-            threads[i].run();
+            threads[i].start();
         }
 
         for(int i = 0; i < NUM_THREADS; i++){
@@ -340,7 +367,7 @@ public class App {
 
 
         success = assertSuccessSort(arr, NUM_ELEMENTS);
-        if (success ==1 ){
+        if (success == 1 ){
             System.out.println("Sort was successful");
         }else{
             System.out.println("Sort wasn't successful");
@@ -355,10 +382,9 @@ public class App {
     public static void main(String[] args) {
 
         App app = new App();
-        app.generateArrayWithRandomNumbers(1000000, 0,0);
-        app.runSort();
 
-        System.out.println("The array was generated");
+        app.runSort(10000000, SORT_TYPES.QUICK, 2);
+
 
     }
 }
