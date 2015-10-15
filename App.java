@@ -1,5 +1,7 @@
 package sort_with_threads;
+import java.util.ArrayList;
 import java.util.Random;
+import java.util.Vector;
 
 /**
  * Created by Victor Ignatenkov on 10/13/15.
@@ -171,7 +173,7 @@ public class App {
 
     private void runSort(){
         NUM_THREADS = 4;
-        NUM_ELEMENTS = 300000 ;
+        NUM_ELEMENTS = 1000000;
         indices = new int[20][2];
         long startTime;
         long endTime;
@@ -180,7 +182,7 @@ public class App {
         /**
          * CHANGE TYPE OF SORT HERE !!!
          */
-        SORTING_ALGORITHM = SORTING_ALGORITHM.INSERTION;
+        SORTING_ALGORITHM = SORTING_ALGORITHM.MERGE;
 
         int low;
         int pivot = NUM_ELEMENTS / NUM_THREADS;
@@ -276,9 +278,73 @@ public class App {
 //        }
 
 
-        generateArrayWithRandomNumbers(300000, 0,0);
+        generateArrayWithRandomNumbers(1000000, 0,0);
 
 
+        Runnable [] tasks = new Runnable[12];
+
+
+        System.out.println("Sorting with multiple threads");
+
+
+        startTime = System.currentTimeMillis();
+
+        for(int i = 0; i < NUM_THREADS; i++){
+            final int iInsideCosure = i;
+            tasks[i] = () ->{
+
+                if (SORTING_ALGORITHM == SORTING_ALGORITHM.MERGE) {
+                    mergeSort(arr, indices[iInsideCosure][0], indices[iInsideCosure][1]);
+                }
+                else if (SORTING_ALGORITHM == SORTING_ALGORITHM.QUICK){
+                    quickSort(arr, indices[iInsideCosure][0], indices[iInsideCosure][1]);
+                }
+                else if (SORTING_ALGORITHM == SORTING_ALGORITHM.INSERTION) {
+                    insertionSort( arr,indices[iInsideCosure][0],  indices[iInsideCosure][1]);
+                }
+            };
+
+        }
+
+        Thread [] threads = new Thread[12];
+
+        for(int i = 0; i < NUM_THREADS; i++){
+            threads[i] = new Thread(tasks[i]);
+        }
+
+        for(int i = 0; i < NUM_THREADS; i++){
+            threads[i].run();
+        }
+
+        for(int i = 0; i < NUM_THREADS; i++){
+            try {
+                threads[i].join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        pivot = NUM_ELEMENTS / NUM_THREADS;
+        for(int i = 0 ,j= 1; i < NUM_THREADS-1; i++, j++){
+            low = i * pivot;
+            if((NUM_THREADS-2) == i){
+                merge(arr, 0, (j*pivot)-1, NUM_ELEMENTS - 1);
+            }else {
+                merge(arr, 0, (j*pivot)-1, (j+1)*pivot-1);
+            }
+        }
+
+        endTime = System.currentTimeMillis();
+        System.out.println("Time spent: " + (endTime - startTime));
+
+
+        success = assertSuccessSort(arr, NUM_ELEMENTS);
+        if (success ==1 ){
+            System.out.println("Sort was successful");
+        }else{
+            System.out.println("Sort wasn't successful");
+        }
 
 
 
@@ -289,7 +355,7 @@ public class App {
     public static void main(String[] args) {
 
         App app = new App();
-        app.generateArrayWithRandomNumbers(300000, 0,0);
+        app.generateArrayWithRandomNumbers(1000000, 0,0);
         app.runSort();
 
         System.out.println("The array was generated");
