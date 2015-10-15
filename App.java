@@ -1,6 +1,7 @@
 package sort_with_threads;
 import java.util.Random;
 
+
 /**
  * Created by Victor Ignatenkov on 10/13/15.
  */
@@ -104,12 +105,56 @@ public class App {
 
 
 
+//    /**
+//     * Quick Sort
+//     */
+//
+//    private int  partition( int a[], int l, int r) {
+//        int pivot, i, j, t;
+//        pivot = a[l];
+//        i = l; j = r+1;
+//
+//        while(true)
+//        {
+//            do ++i; while( a[i] <= pivot && i <= r );
+//            do --j; while( a[j] > pivot );
+//            if( i >= j ) break;
+//            t = a[i]; a[i] = a[j]; a[j] = t;
+//        }
+//        t = a[l]; a[l] = a[j]; a[j] = t;
+//        return j;
+//    }
+//
+//    private void quickSort( int a[], int l, int r)
+//    {
+//        int j;
+//
+//        if( l < r )
+//        {
+//            // divide and conquer
+//            j = partition( a, l, r);
+//            quickSort( a, l, j-1);
+//            quickSort( a, j+1, r);
+//        }
+//
+//    }
+//    /**
+//     * END of Quick Sort
+//     */
+
+
+
+
+
+
+
+
 
     private void generateArrayWithRandomNumbers(final int len, final int low, final int high){
         arr = new int[len];
         int temp = 0;
         while(temp < len){
-            arr[temp] = Math.abs(new Random().nextInt())%20;
+            arr[temp] = Math.abs(new Random().nextInt())%NUM_ELEMENTS;
             temp++;
         }
 
@@ -383,7 +428,7 @@ public class App {
 
         App app = new App();
 
-        app.runSort(10000000, SORT_TYPES.QUICK, 2);
+        app.runSort(10000000, SORT_TYPES.QUICK, 4);
 
 
     }
