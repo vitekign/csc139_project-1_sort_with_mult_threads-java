@@ -25,6 +25,17 @@ public class App {
 
 
 
+    int assertSuccessSort( int arr[], int length){
+
+        int i = 0;
+        while(i != length-1 ){
+            if(arr[i] > arr[i+1]){
+                return -1;
+            }
+            i++;
+        }
+        return 1;
+    }
 
 
     public static void quickSort(int[] a, int p, int r)
@@ -160,12 +171,15 @@ public class App {
 
     private void runSort(){
         NUM_THREADS = 4;
-        NUM_ELEMENTS = 100000 ;
+        NUM_ELEMENTS = 300000 ;
         indices = new int[20][2];
         long startTime;
         long endTime;
         long duration;
 
+        /**
+         * CHANGE TYPE OF SORT HERE !!!
+         */
         SORTING_ALGORITHM = SORTING_ALGORITHM.INSERTION;
 
         int low;
@@ -242,14 +256,28 @@ public class App {
                 merge(arr, 0, (j*pivot)-1, (j+1)*pivot-1);
             }
         }
-
         endTime = System.currentTimeMillis();
+
         System.out.println("Time spent: " + (endTime - startTime));
+
+        int success = assertSuccessSort(arr, NUM_ELEMENTS);
+        if (success ==1 ){
+            System.out.println("Sort was successful");
+        }else{
+            System.out.println("Sort wasn't successful");
+        }
+
+
+
 
         System.out.println("\n");
 //        for (int i = 0; i < NUM_ELEMENTS; i++) {
 //            System.out.println(i + " : " + arr[i]);
 //        }
+
+
+        generateArrayWithRandomNumbers(300000, 0,0);
+
 
 
 
@@ -261,7 +289,7 @@ public class App {
     public static void main(String[] args) {
 
         App app = new App();
-        app.generateArrayWithRandomNumbers(100000, 0,0);
+        app.generateArrayWithRandomNumbers(300000, 0,0);
         app.runSort();
 
         System.out.println("The array was generated");
