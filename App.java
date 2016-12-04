@@ -2,9 +2,7 @@ package sort_with_threads;
 import java.util.Random;
 
 
-/**
- * Created by Victor Ignatenkov on 10/13/15.
- */
+/* Created by Victor Ignatenkov on 10/13/15. */
 
 enum SORT_TYPES {
     INSERTION,
@@ -13,46 +11,30 @@ enum SORT_TYPES {
 }
 
 
-
-
 public class App {
 
-    public int[] arr;
-    public int[][] indices;
-
-    int NUM_THREADS;
-
-    int NUM_ELEMENTS;
-
-    SORT_TYPES SORTING_ALGORITHM;
-
-
-
+    private int[] arr;
+    private int[][] indices;
+    private int NUM_OF_THREADS;
+    private int NUM_OF_ELEMENTS;
+    private SORT_TYPES SORTING_ALGORITHM;
+    private   String sortName;
 
     public int getNumberOfThreads() {
-        return NUM_THREADS;
+        return NUM_OF_THREADS;
     }
-
     public void setNumberOfThreads(int NUM_THREADS) {
-        this.NUM_THREADS = NUM_THREADS;
+        this.NUM_OF_THREADS = NUM_THREADS;
     }
-
-
-
-
     public int getNumberOfElements() {
-        return NUM_ELEMENTS;
+        return NUM_OF_ELEMENTS;
     }
-
     public void setNumberOfElements(int NUM_ELEMENTS) {
-        this.NUM_ELEMENTS = NUM_ELEMENTS;
+        this.NUM_OF_ELEMENTS = NUM_ELEMENTS;
     }
-
-
 
 
     int assertSuccessSort( int arr[], int length){
-
         int i = 0;
         while(i != length-1 ){
             if(arr[i] > arr[i+1]){
@@ -63,101 +45,46 @@ public class App {
         return 1;
     }
 
+    private static int separateInTwoHalves(int[] arr, int l, int h) {
+      /*    i   |           |    j             | pivot
+            2       4     6      7      1      3
+            <   |    >      |                  |     */
 
-    public static void quickSort(int[] a, int p, int r)
-    {
-        if(p<r)
-        {
-            int q=partition(a,p,r);
-            quickSort(a,p,q);
-            quickSort(a,q+1,r);
+        int pivot = arr[h];
+        int i = l - 1;
+        for(int j = l; j < h; j++){
+            if(arr[j] < pivot) {
+                i++;
+                swap(arr, i, j);
+            }
         }
+        i++;
+        swap(arr, i, h);
+        return i;
     }
 
-    private static int partition(int[] a, int p, int r) {
-
-        int x = a[p];
-        int i = p-1 ;
-        int j = r+1 ;
-
-        while (true) {
-            i++;
-            while ( i< r && a[i] < x)
-                i++;
-            j--;
-            while (j>p && a[j] > x)
-                j--;
-
-            if (i < j)
-                swap(a, i, j);
-            else
-                return j;
+    public static void quickSort(int[] arr, int l, int h) {
+        if(l < h){
+            int pivot = separateInTwoHalves(arr, l, h);
+            quickSort(arr, l, pivot-1);
+            quickSort(arr, pivot+1, h);
         }
     }
 
     private static void swap(int[] a, int i, int j) {
-        // TODO Auto-generated method stub
         int temp = a[i];
         a[i] = a[j];
         a[j] = temp;
     }
 
 
-
-
-//    /**
-//     * Quick Sort
-//     */
-//
-//    private int  partition( int a[], int l, int r) {
-//        int pivot, i, j, t;
-//        pivot = a[l];
-//        i = l; j = r+1;
-//
-//        while(true)
-//        {
-//            do ++i; while( a[i] <= pivot && i <= r );
-//            do --j; while( a[j] > pivot );
-//            if( i >= j ) break;
-//            t = a[i]; a[i] = a[j]; a[j] = t;
-//        }
-//        t = a[l]; a[l] = a[j]; a[j] = t;
-//        return j;
-//    }
-//
-//    private void quickSort( int a[], int l, int r)
-//    {
-//        int j;
-//
-//        if( l < r )
-//        {
-//            // divide and conquer
-//            j = partition( a, l, r);
-//            quickSort( a, l, j-1);
-//            quickSort( a, j+1, r);
-//        }
-//
-//    }
-//    /**
-//     * END of Quick Sort
-//     */
-
-
-
-
-
-
-
-
-
     private void generateArrayWithRandomNumbers(final int len, final int low, final int high){
-        arr = new int[len];
-        int temp = 0;
-        while(temp < len){
-            arr[temp] = Math.abs(new Random().nextInt())%NUM_ELEMENTS;
-            temp++;
-        }
-
+            arr = new int[len];
+            int temp = 0;
+            while(temp < len){
+                arr[temp] = Math.abs(new Random().nextInt())% NUM_OF_ELEMENTS;
+                temp++;
+            }
     }
 
 
@@ -175,23 +102,19 @@ public class App {
     }
 
 
-    private void merge(int arr[], int l, int m, int r)
-    {
+    private void merge(int arr[], int l, int m, int r) {
         int i, j, k;
         int n1 = m - l + 1;
         int n2 =  r - m;
 
-    /* create temp arrays */
         int[] L = new int[n1];
         int[] R = new int[n2];
 
-    /* Copy data to temp arrays L[] and R[] */
         for(i = 0; i < n1; i++)
             L[i] = arr[l + i];
         for(j = 0; j < n2; j++)
             R[j] = arr[m + 1+ j];
 
-    /* Merge the temp arrays back into arr[l..r]*/
         i = 0;
         j = 0;
         k = l;
@@ -210,7 +133,6 @@ public class App {
             k++;
         }
 
-    /* Copy the remaining elements of L[], if there are any */
         while (i < n1)
         {
             arr[k] = L[i];
@@ -218,7 +140,6 @@ public class App {
             k++;
         }
 
-    /* Copy the remaining elements of R[], if there are any */
         while (j < n2)
         {
             arr[k] = R[j];
@@ -238,55 +159,42 @@ public class App {
         }
     }
 
-
-    private void runSort(int numElements, SORT_TYPES type, int numThreads ){
-        setNumberOfElements(numElements);
+    private void runSort(int numOfElements, SORT_TYPES type, int numOfThreads ){
+        setNumberOfElements(numOfElements);
         SORTING_ALGORITHM = type;
-        NUM_THREADS = numThreads;
+        NUM_OF_THREADS = numOfThreads;
 
-        indices = new int[20][2];
+
+        indices = new int[numOfThreads][2];
         long startTime;
         long endTime;
-        long duration;
-
-
-
-        /**
-         * CHANGE TYPE OF SORT HERE !!!
-         */
-
 
         int low;
-        int pivot = NUM_ELEMENTS / NUM_THREADS;
-        for (int i = 0, j = 1; i < NUM_THREADS; i++, j++) {
+        int pivot = NUM_OF_ELEMENTS / NUM_OF_THREADS;
+        for (int i = 0, j = 1; i < NUM_OF_THREADS; i++, j++) {
             low = i * pivot;
 
-        /*
-         * This case is only for the cases when division
+        /* This case is only for the cases when division
          * of elements in the array by the number of threads
          * doesn't produce equal sections
          *
          * 11 elements and 4 threads
          * 11/4 = 3
-         * 0-2 3-5 6-8 9-the rest of the array
-         *
-         */
-            if (i == NUM_THREADS - 1) {
+         * 0-2 3-5 6-8 9-the rest of the array  */
+            if (i == NUM_OF_THREADS - 1) {
                 if(  SORTING_ALGORITHM != SORTING_ALGORITHM.INSERTION ){
                     indices[i][0] = low;
-                    indices[i][1] = NUM_ELEMENTS - 1;}
+                    indices[i][1] = NUM_OF_ELEMENTS - 1;}
                 else {
                     indices[i][0] = low;
-                    indices[i][1] = NUM_ELEMENTS%(NUM_THREADS) + pivot;
+                    indices[i][1] = NUM_OF_ELEMENTS %(NUM_OF_THREADS) + pivot;
                 }
 
             } else {
-            /*
-             * In case of an array with 20 elements and 4 threads
+            /* In case of an array with 20 elements and 4 threads
              * 0-4 5-9 10-14 15-19
              *
-             * pivot = 20 / 4 = 5
-             */
+             * pivot = 20 / 4 = 5 */
                 if(  SORTING_ALGORITHM != SORTING_ALGORITHM.INSERTION ){
                     indices[i][0] = low;
                     indices[i][1] = j * pivot - 1;}
@@ -298,11 +206,10 @@ public class App {
             }
         }
 
-
-        generateArrayWithRandomNumbers(NUM_ELEMENTS, 0, 0);
+        generateArrayWithRandomNumbers(NUM_OF_ELEMENTS, 0, 0);
         startTime = System.currentTimeMillis();
 
-        for (int i = 0; i < NUM_THREADS; i++) {
+        for (int i = 0; i < NUM_OF_THREADS; i++) {
             if (SORTING_ALGORITHM == SORTING_ALGORITHM.MERGE) {
                 mergeSort(arr, indices[i][0], indices[i][1]);
             }
@@ -315,56 +222,37 @@ public class App {
         }
 
 
-//        for (int i = 0; i < NUM_ELEMENTS; i++) {
-//            System.out.println(arr[i]);
-//        }
-
-
-
-        pivot = NUM_ELEMENTS / NUM_THREADS;
-        for(int i = 0 ,j= 1; i < NUM_THREADS-1; i++, j++){
-            low = i * pivot;
-            if((NUM_THREADS-2) == i){
-                merge(arr, 0, (j*pivot)-1, NUM_ELEMENTS - 1);
+        pivot = NUM_OF_ELEMENTS / NUM_OF_THREADS;
+        for(int i = 0, j = 1; i < NUM_OF_THREADS -1; i++, j++){
+            if((NUM_OF_THREADS -2) == i){
+                merge(arr, 0, (j*pivot)-1, NUM_OF_ELEMENTS - 1);
             }else {
                 merge(arr, 0, (j*pivot)-1, (j+1)*pivot-1);
             }
         }
         endTime = System.currentTimeMillis();
 
-        System.out.println("Time spent: " + (endTime - startTime));
+        System.out.println("Sorting with a single thread:");
+        System.out.println("\tTime spent: " + (endTime - startTime));
 
-        int success = assertSuccessSort(arr, NUM_ELEMENTS);
-        if (success ==1 ){
-            System.out.println("Sort was successful");
+        int success = assertSuccessSort(arr, NUM_OF_ELEMENTS);
+        if (success == 1 ){
+            System.out.println("\tSort with " + sortName + " was accurate");
         }else{
-            System.out.println("Sort wasn't successful");
+            System.out.println("\tSort with " + sortName + " inaccurate");
         }
 
-
-
-
         System.out.println("\n");
-//        for (int i = 0; i < NUM_ELEMENTS; i++) {
-//            System.out.println(i + " : " + arr[i]);
-//        }
 
-
-        generateArrayWithRandomNumbers(NUM_ELEMENTS, 0,0);
-
-
-        Runnable [] tasks = new Runnable[12];
-
-
-        System.out.println("Sorting with multiple threads");
-
-
+        generateArrayWithRandomNumbers(NUM_OF_ELEMENTS, 0,0);
+        System.out.println("Sorting with multiple threads:");
         startTime = System.currentTimeMillis();
 
-        for(int i = 0; i < NUM_THREADS; i++){
-            final int iInsideClosure = i;
-            tasks[i] = () ->{
 
+        Thread [] threads = new Thread[NUM_OF_THREADS];
+        for (int i = 0; i < NUM_OF_THREADS; i++) {
+            final int iInsideClosure = i;
+            threads[i] = new Thread( ()-> {
                 if (SORTING_ALGORITHM == SORTING_ALGORITHM.MERGE) {
                     mergeSort(arr, indices[iInsideClosure][0], indices[iInsideClosure][1]);
                 }
@@ -374,21 +262,12 @@ public class App {
                 else if (SORTING_ALGORITHM == SORTING_ALGORITHM.INSERTION) {
                     insertionSort( arr,indices[iInsideClosure][0],  indices[iInsideClosure][1]);
                 }
-            };
-
+            });
         }
-
-        Thread [] threads = new Thread[12];
-
-        for(int i = 0; i < NUM_THREADS; i++){
-            threads[i] = new Thread(tasks[i]);
-        }
-
-        for(int i = 0; i < NUM_THREADS; i++){
+        for(int i = 0; i < NUM_OF_THREADS; i++){
             threads[i].start();
         }
-
-        for(int i = 0; i < NUM_THREADS; i++){
+        for(int i = 0; i < NUM_OF_THREADS; i++){
             try {
                 threads[i].join();
             } catch (InterruptedException e) {
@@ -397,39 +276,83 @@ public class App {
         }
 
 
-        pivot = NUM_ELEMENTS / NUM_THREADS;
-        for(int i = 0 ,j= 1; i < NUM_THREADS-1; i++, j++){
-            low = i * pivot;
-            if((NUM_THREADS-2) == i){
-                merge(arr, 0, (j*pivot)-1, NUM_ELEMENTS - 1);
+        pivot = NUM_OF_ELEMENTS / NUM_OF_THREADS;
+        for(int i = 0, j = 1; i < NUM_OF_THREADS -1; i++, j++){
+            if((NUM_OF_THREADS -2) == i){
+                merge(arr, 0, (j*pivot)-1, NUM_OF_ELEMENTS - 1);
             }else {
                 merge(arr, 0, (j*pivot)-1, (j+1)*pivot-1);
             }
         }
 
         endTime = System.currentTimeMillis();
-        System.out.println("Time spent: " + (endTime - startTime));
+        System.out.println("\tTime spent: " + (endTime - startTime));
 
-
-        success = assertSuccessSort(arr, NUM_ELEMENTS);
+        success = assertSuccessSort(arr, NUM_OF_ELEMENTS);
         if (success == 1 ){
-            System.out.println("Sort was successful");
+            System.out.println("\tSort with " + sortName + " was accurate");
         }else{
-            System.out.println("Sort wasn't successful");
+            System.out.println("\tSort with " + sortName + " inaccurate");
         }
-
-
-
     }
-
 
 
     public static void main(String[] args) {
+        SORT_TYPES tempSortType;
+        //DEFAULT VALUE, if parameters weren't provided
+        tempSortType = SORT_TYPES.QUICK;
 
+        int length;
+        char typeOfSort;
+        int numOfThreads;
         App app = new App();
 
-        app.runSort(10000000, SORT_TYPES.QUICK, 4);
-
-
+        if(args.length == 3) {
+            length = Integer.parseInt(args[0]);
+            numOfThreads = Integer.parseInt(args[1]);
+            typeOfSort = (args[2].toCharArray())[0];
+            if (typeOfSort == 'i' || typeOfSort == 'I') {
+                tempSortType = SORT_TYPES.INSERTION;
+                app.sortName = "Insertion";
+            } else if (typeOfSort == 'm' || typeOfSort == 'M') {
+                tempSortType = SORT_TYPES.MERGE;
+                app.sortName = "Merge";
+            }
+            else if (typeOfSort == 'q' || typeOfSort == 'Q') {
+                tempSortType = SORT_TYPES.QUICK;
+                app.sortName = "Quick";
+            }
+            app.runSort(length, tempSortType, numOfThreads);
+        } else {
+            app.sortName = "Quick";
+            app.runSort(1000000, SORT_TYPES.QUICK, 4);
+        }
     }
 }
+
+   /* * * * *  TEST RESULTS * * * * *
+     1. Run InsertionSort using two threads with array sizes 10K, 100K and 300K.
+                    1 thread                                                 2 threads
+     10 K           83|33|24|43                                              157|69|49|80
+     100 K          1834|1822|1897|1763|1929                                 880|814|896|908|900
+     300 K          15016|14862|14933|14869                                  7911|7880|7977|7893
+
+
+     2. Run InsertionSort using four threads with an array size of 100K.
+                     1 thread                                                4 threads
+     100 K           884|941|1013|937|                                       410|441|453|412
+
+
+
+     3. Run QuickSort using two threads with array sizes 1M, 10M and 100M.
+                     1 thread                                                 2 threads
+     1M              222|230|207|190                                         150|145|148|140
+     10M             1497|1542|1551|1672|1619                                 739|776|833|831|779
+     100M            16122|15355|15250                                        8035|7889|7680
+
+
+
+     4. Run QuickSort using four threads with an array size of 10M.
+                     1 thread                                                 4 threads
+     10M             1622|1664|1504|1579|1704                                 620|718|656|652|759
+     */
