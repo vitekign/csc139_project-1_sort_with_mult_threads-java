@@ -88,17 +88,17 @@ public class App {
     }
 
 
-    private void insertionSort(int arr[], int start,  int length) {
-        int i, j, tmp;
-        for (i = 1; i < length; i++) {
-            j = i;
-            while (j > 0 && arr[start + j - 1] > arr[start + j]) {
-                tmp = arr[start + j];
-                arr[start + j] = arr[start + j - 1];
-                arr[start + j - 1] = tmp;
-                j--;
-            }
-        }
+    private void insertionSort(int arr[], int l,  int n) {
+       for(int i = l + 1; i < l + n; i++){
+           int key = arr[i];
+           int j = i - 1;
+           while(j >= l && key < arr[j]){
+               arr[j + 1] = arr[j];
+               j--;
+           }
+           j++;
+           arr[j] = key;
+       }
     }
 
 
