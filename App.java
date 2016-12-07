@@ -8,6 +8,8 @@ enum SORT_TYPES {
     INSERTION,
     QUICK,
     MERGE,
+    HEAP,
+
 }
 
 
@@ -87,6 +89,31 @@ public class App {
             }
     }
 
+    private void heapifyMax(int arr[], int i, int n, int offset){
+        int max = i;
+        int l = i * 2 + 1 + offset;
+        int r = i * 2 + 2 + offset;
+        max += offset;
+        if((l-offset) < n && arr[l] > arr[max])
+            max = l;
+        if((r-offset) < n && arr[r] > arr[max])
+            max = r;
+        if(max != i + offset){
+            swap(arr, i+offset, max);
+            heapifyMax(arr, max - offset, n, offset);
+        }
+    }
+
+    private void heapSort(int arr[], int l, int n){
+        for(int i = n/2-1; i >= 0; i--){
+            heapifyMax(arr, i, n, l);
+        }
+
+        for(int i = 0; i < n - 1; i++){
+            swap(arr, l, l + n - 1 - i);
+            heapifyMax(arr, 0, n - 1 - i, l);
+        }
+    }
 
     private void insertionSort(int arr[], int l,  int n) {
        for(int i = l + 1; i < l + n; i++){
@@ -182,7 +209,7 @@ public class App {
          * 11/4 = 3
          * 0-2 3-5 6-8 9-the rest of the array  */
             if (i == NUM_OF_THREADS - 1) {
-                if(  SORTING_ALGORITHM != SORTING_ALGORITHM.INSERTION ){
+                if(  SORTING_ALGORITHM != SORTING_ALGORITHM.INSERTION && SORTING_ALGORITHM != SORTING_ALGORITHM.HEAP){
                     indices[i][0] = low;
                     indices[i][1] = NUM_OF_ELEMENTS - 1;}
                 else {
@@ -195,7 +222,7 @@ public class App {
              * 0-4 5-9 10-14 15-19
              *
              * pivot = 20 / 4 = 5 */
-                if(  SORTING_ALGORITHM != SORTING_ALGORITHM.INSERTION ){
+                if(  SORTING_ALGORITHM != SORTING_ALGORITHM.INSERTION && SORTING_ALGORITHM != SORTING_ALGORITHM.HEAP){
                     indices[i][0] = low;
                     indices[i][1] = j * pivot - 1;}
                 else {
@@ -219,6 +246,9 @@ public class App {
             else if (SORTING_ALGORITHM == SORTING_ALGORITHM.INSERTION) {
                 insertionSort( arr,indices[i][0],  indices[i][1]);
                 }
+            else if (SORTING_ALGORITHM == SORTING_ALGORITHM.HEAP) {
+                heapSort( arr,indices[i][0],  indices[i][1]);
+            }
         }
 
 
@@ -261,6 +291,9 @@ public class App {
                 }
                 else if (SORTING_ALGORITHM == SORTING_ALGORITHM.INSERTION) {
                     insertionSort( arr,indices[iInsideClosure][0],  indices[iInsideClosure][1]);
+                }
+                else if (SORTING_ALGORITHM == SORTING_ALGORITHM.HEAP) {
+                    heapSort( arr,indices[iInsideClosure][0],  indices[iInsideClosure][1]);
                 }
             });
         }
@@ -321,6 +354,10 @@ public class App {
             else if (typeOfSort == 'q' || typeOfSort == 'Q') {
                 tempSortType = SORT_TYPES.QUICK;
                 app.sortName = "Quick";
+            }
+            else if (typeOfSort == 'h' || typeOfSort == 'H') {
+                tempSortType = SORT_TYPES.HEAP;
+                app.sortName = "Heap";
             }
             app.runSort(length, tempSortType, numOfThreads);
         } else {
